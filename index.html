@@ -1,0 +1,73 @@
+from datetime import datetime, timedelta
+
+class FoodItem:
+    def __init__(self, name, category, quantity, expiry_date):
+        self.name = name
+        self.category = category
+        self.quantity = quantity
+        self.expiry_date = expiry_date
+        self.status = 'Available'  # can be 'Available', 'Wasted', or 'Donated'
+    
+    def __repr__(self):
+        return f"{self.name} ({self.category}) - Quantity: {self.quantity}, Expiry: {self.expiry_date}, Status: {self.status}"
+
+class FoodWasteManagementSystem:
+    def __init__(self):
+        self.food_inventory = []
+    
+    def add_food(self, name, category, quantity, expiry_date):
+        food_item = FoodItem(name, category, quantity, expiry_date)
+        self.food_inventory.append(food_item)
+    
+    def waste_food(self, name, quantity):
+        for food in self.food_inventory:
+            if food.name == name and food.quantity >= quantity:
+                food.quantity -= quantity
+                food.status = 'Wasted'
+                print(f"Wasted {quantity} of {name}")
+                return
+        print(f"Not enough {name} in inventory to waste.")
+    
+    def donate_food(self, name, quantity):
+        for food in self.food_inventory:
+            if food.name == name and food.quantity >= quantity:
+                food.quantity -= quantity
+                food.status = 'Donated'
+                print(f"Donated {quantity} of {name}")
+                return
+        print(f"Not enough {name} in inventory to donate.")
+    
+    def check_expiration(self):
+        today = datetime.today()
+        for food in self.food_inventory:
+            expiry = datetime.strptime(food.expiry_date, "%Y-%m-%d")
+            if expiry < today:
+                print(f"Warning: {food.name} has expired!")
+            elif expiry - timedelta(days=3) < today:
+                print(f"Warning: {food.name} will expire soon (within 3 days)!")
+    
+    def generate_report(self):
+        print("\nFood Inventory Report:")
+        for food in self.food_inventory:
+            print(food)
+
+# Sample usage
+if __name__ == "__main__":
+    system = FoodWasteManagementSystem()
+    
+    # Add food items
+    system.add_food("Apple", "Fruit", 100, "2025-04-05")
+    system.add_food("Bread", "Bakery", 50, "2025-03-28")
+    system.add_food("Milk", "Dairy", 30, "2025-03-30")
+    
+    # Waste food items
+    system.waste_food("Apple", 10)
+    
+    # Donate food items
+    system.donate_food("Bread", 20)
+    
+    # Check expiration
+    system.check_expiration()
+    
+    # Generate report
+    system.generate_report()
